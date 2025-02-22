@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
-import { supabase } from '../lib/supabase';
-import { cn } from '../lib/utils';
-import { Mail, Lock, Loader2 } from 'lucide-react';
+import React, { useState } from "react";
+import axios from "../utils/api"; // Import Axios instance
+import { Mail, Lock, Loader2 } from "lucide-react";
 
 interface AuthFormProps {
-  mode: 'signin' | 'signup';
+  mode: "signin" | "signup";
 }
 
 export function AuthForm({ mode }: AuthFormProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,21 +18,15 @@ export function AuthForm({ mode }: AuthFormProps) {
     setError(null);
 
     try {
-      if (mode === 'signup') {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      const endpoint = mode === "signup" ? "/auth/signup" : "/auth/signin";
+      const response = await axios.post(endpoint, { email, password });
+
+      // Store token or navigate
+      console.log("Success:", response.data);
+      localStorage.setItem("token", response.data.token);
+      alert(`${mode === "signup" ? "Signed up" : "Signed in"} successfully!`);
+    } catch (err: any) {
+      setError(err.response?.data?.message || "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -51,7 +44,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="pl-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="pl-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500"
             placeholder="Enter your email"
             required
           />
@@ -68,36 +61,24 @@ export function AuthForm({ mode }: AuthFormProps) {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="pl-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="pl-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500"
             placeholder="Enter your password"
             required
           />
         </div>
       </div>
 
-      {error && (
-        <div className="text-sm text-red-500">
-          {error}
-        </div>
-      )}
+      {error && <div className="text-sm text-red-500">{error}</div>}
 
       <button
         type="submit"
         disabled={loading}
-        className={cn(
-          "w-full flex items-center justify-center rounded-lg px-4 py-2 text-white font-medium",
-          loading ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700",
-          "transition-colors duration-200"
-        )}
+        className={`w-full flex items-center justify-center rounded-lg px-4 py-2 text-white font-medium ${
+          loading ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700"
+        } transition-colors duration-200`}
       >
-        {loading ? (
-          <>
-            <Loader2 className="animate-spin mr-2 h-5 w-5" />
-            {mode === 'signup' ? 'Signing up...' : 'Signing in...'}
-          </>
-        ) : (
-          mode === 'signup' ? 'Sign Up' : 'Sign In'
-        )}
+        {loading ? <Loader2 className="animate-spin mr-2 h-5 w-5" /> : null}
+        {loading ? (mode === "signup" ? "Signing up..." : "Signing in...") : mode === "signup" ? "Sign Up" : "Sign In"}
       </button>
     </form>
   );

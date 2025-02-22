@@ -15,7 +15,7 @@ export function Home() {
           Mendora
         </h1>
         <p className="text-lg text-gray-600">
-          Connecting skilled professionals with customers in your area
+        Skills Meet Opportunity
         </p>
       </div>
 
