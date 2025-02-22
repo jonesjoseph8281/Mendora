@@ -10,10 +10,9 @@ datasource db {
 }
 
 model Business {
-  id          String  @id @default(uuid())
+  id          String   @id @default(uuid())
   name        String
   category    String
   description String
-  location    String
-  createdAt   DateTime @default(now())
 }
+
