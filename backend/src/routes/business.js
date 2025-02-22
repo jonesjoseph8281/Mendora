@@ -96,4 +96,18 @@ router.post("/review/:businessId", authMiddleware, async (req, res) => {
     }
 });
 
+router.post('/register', async (req, res) => {
+    try {
+      const { name, service, location, phone, email, description } = req.body;
+  
+      const newBusiness = await prisma.business.create({
+        data: { name, service, location, phone, email, description },
+      });
+  
+      res.status(201).json(newBusiness);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
 export default router;
