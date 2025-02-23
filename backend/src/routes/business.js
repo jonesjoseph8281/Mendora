@@ -1,23 +1,34 @@
 import express from "express";
 import prisma from "../utils/prismaClient.js";
 import authMiddleware from "../middleware/auth.js";
+import multer from "multer";
+import path from "path";
 
 const router = express.Router();
 
-router.post("/add", async (req, res) => {
-    try {
-        const { name, category, description } = req.body;
+// 📌 Multer Configuration for File Uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "uploads/"); // Ensure this folder exists
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
+    },
+});
+const upload = multer({ storage });
 
-        if (!name || !category || !description) {
+// 📌 Add a Business with Image
+router.post("/add", upload.single("image"), async (req, res) => {
+    try {
+        const { name, category, description, location, businessEmail, contact } = req.body;
+        const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+
+        if (!name || !category || !description || !location || !businessEmail || !contact) {
             return res.status(400).json({ error: "All fields are required" });
         }
 
         const newBusiness = await prisma.business.create({
-            data: {
-                name,
-                category,
-                description
-            }
+            data: { name, category, description, location, businessEmail, contact, imageUrl },
         });
 
         res.status(201).json(newBusiness);
@@ -44,9 +55,9 @@ router.get("/search", async (req, res) => {
             where: {
                 OR: [
                     { name: { contains: query, mode: "insensitive" } },
-                    { category: { contains: query, mode: "insensitive" } }
-                ]
-            }
+                    { category: { contains: query, mode: "insensitive" } },
+                ],
+            },
         });
         res.json(businesses);
     } catch (error) {
@@ -86,8 +97,8 @@ router.post("/review/:businessId", authMiddleware, async (req, res) => {
                 userId: req.user.userId,
                 businessId: req.params.businessId,
                 rating,
-                comment
-            }
+                comment,
+            },
         });
 
         res.json(newReview);
@@ -96,18 +107,20 @@ router.post("/review/:businessId", authMiddleware, async (req, res) => {
     }
 });
 
-router.post('/register', async (req, res) => {
+// 📌 Register a Business (Alternative)
+router.post("/register", upload.single("image"), async (req, res) => {
     try {
-      const { name, service, location, phone, email, description } = req.body;
-  
-      const newBusiness = await prisma.business.create({
-        data: { name, service, location, phone, email, description },
-      });
-  
-      res.status(201).json(newBusiness);
+        const { name, service, location, phone, email, description } = req.body;
+        const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+
+        const newBusiness = await prisma.business.create({
+            data: { name, service, location, phone, email, description, imageUrl },
+        });
+
+        res.status(201).json(newBusiness);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+        res.status(400).json({ error: error.message });
     }
-  });
+});
 
 export default router;

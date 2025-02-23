@@ -13,7 +13,12 @@ model Business {
   id          String   @id @default(uuid())
   name        String
   category    String
-  description String
+  location    String?
+  description String?
+  businessEmail String?
+  contact     String?
+  imageUrl     String?
+
 }
 
 model User {
