@@ -8,13 +8,14 @@ const ServicePage = () => {
     const [showContacts, setShowContacts] = useState(false);
 
     const businessId = "your-business-id"; // Replace with actual business ID
+    const BASE_URL = process.env.BASE_URL; // Use the BASE_URL from environment variables
 
     const fetchContacts = async () => {
         try {
             const token = localStorage.getItem("token"); // Get token from local storage
             console.log(token)
             const response = await axios.get(
-                `http://localhost:5000/api/business/contacts/${businessId}`,
+                `${BASE_URL}/api/business/contacts/${businessId}`,
                 {
                   headers: { Authorization: `Bearer ${token}` }, // Send the token in headers
                 }

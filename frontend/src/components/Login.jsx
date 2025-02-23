@@ -6,6 +6,7 @@ import '../styles/auth.css';
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const navigate = useNavigate();
+  const BASE_URL = process.env.BASE_URL; // Use the BASE_URL from environment variables
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -14,7 +15,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/login", formData);
+      const response = await axios.post(`${BASE_URL}/api/auth/login`, formData);
       console.log(response.data);
       
       // Store the token in localStorage
@@ -25,7 +26,6 @@ const Login = () => {
       console.error("Login failed", error.response?.data || error.message);
     }
   };
-  
 
   return (
     <div className="auth-container">

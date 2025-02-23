@@ -11,6 +11,7 @@ const Business = () => {
     contact: "",
   });
   const [image, setImage] = useState(null);
+  const BASE_URL = process.env.BASE_URL; // Use the BASE_URL from environment variables
 
   const handleChange = (e) => {
     setBusinessData({ ...businessData, [e.target.name]: e.target.value });
@@ -32,7 +33,7 @@ const Business = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/api/business/add", formData, {
+      const response = await axios.post(`${BASE_URL}/api/business/add`, formData, {
         headers: { "Content-Type": "multipart/form-data", "Authorization": `Bearer ${localStorage.getItem("token")}` },
       });
       console.log("Business added successfully:", response.data);

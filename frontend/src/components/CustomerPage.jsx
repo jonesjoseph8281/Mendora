@@ -5,10 +5,11 @@ import '../styles/customerpage.css'; // Ensure the CSS file is imported
 const CustomerPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [businesses, setBusinesses] = useState([]);
+  const BASE_URL = process.env.BASE_URL; // Use the BASE_URL from environment variables
 
   const fetchAllBusinesses = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/business/all");
+      const response = await axios.get(`${BASE_URL}/api/business/all`);
       setBusinesses(response.data);
     } catch (error) {
       console.error("Error fetching businesses:", error);
@@ -17,7 +18,7 @@ const CustomerPage = () => {
 
   const searchBusiness = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/business/search?query=${searchQuery}`);
+      const response = await axios.get(`${BASE_URL}/api/business/search?query=${searchQuery}`);
       setBusinesses(response.data);
     } catch (error) {
       console.error("Error searching businesses:", error);
@@ -33,7 +34,7 @@ const CustomerPage = () => {
       }
 
       const response = await axios.post(
-        `http://localhost:5000/api/business/contact/${businessId}`,
+        `${BASE_URL}/api/business/contact/${businessId}`,
         {}, // Include any required body parameters
         {
           headers: { Authorization: `Bearer ${token}` }, // Send the token in headers
