@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import '../styles/service.css';
-import '../styles/auth.css';
 
 const Service = () => {
   const [services, setServices] = useState([]);
-  const BASE_URL = process.env.BASE_URL; // Use the BASE_URL from environment variables
+  const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL; // Use the BASE_URL from environment variables
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/service/all`);
+        const response = await axios.get(`${BASE_URL}/api/business/all`);
         setServices(response.data);
       } catch (error) {
         console.error("Error fetching services:", error);

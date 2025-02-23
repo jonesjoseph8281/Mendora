@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import '../styles/auth.css';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const navigate = useNavigate();
-  const BASE_URL = process.env.BASE_URL; // Use the BASE_URL from environment variables
-
+  const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL; // Use the BASE_URL from environment variables
+  console.log(BASE_URL);
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };

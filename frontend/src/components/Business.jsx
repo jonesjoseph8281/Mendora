@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import axios from "axios";
-import '../styles/auth.css';
 
 const Business = () => {
   const [businessData, setBusinessData] = useState({
@@ -13,7 +12,7 @@ const Business = () => {
   });
   const [image, setImage] = useState(null);
   const [error, setError] = useState(null);
-  const BASE_URL = process.env.BASE_URL; // Use the BASE_URL from environment variables
+  const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL; // Use the BASE_URL from environment variables
 
   const handleChange = (e) => {
     setBusinessData({ ...businessData, [e.target.name]: e.target.value });
@@ -37,7 +36,7 @@ const Business = () => {
     const token = localStorage.getItem('authToken'); // Retrieve the token from storage
 
     try {
-      const response = await axios.post("http://localhost:5000/api/business/add", formData, {
+      const response = await axios.post(`${BASE_URL}/api/business/add`, formData, {
         headers: { "Content-Type": "multipart/form-data", "Authorization": `Bearer ${localStorage.getItem("token")}` },
       });
       console.log("Business added successfully:", response.data);

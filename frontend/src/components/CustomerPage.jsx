@@ -4,11 +4,10 @@ import axios from "axios";
 const CustomerPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [businesses, setBusinesses] = useState([]);
-  const BASE_URL = process.env.BASE_URL; // Use the BASE_URL from environment variables
 
   const fetchAllBusinesses = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/business/all`);
+      const response = await axios.get("http://localhost:5000/api/business/all");
       setBusinesses(response.data);
     } catch (error) {
       console.error("Error fetching businesses:", error);
@@ -17,7 +16,7 @@ const CustomerPage = () => {
 
   const searchBusiness = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/business/search?query=${searchQuery}`);
+      const response = await axios.get(`http://localhost:5000/api/business/search?query=${searchQuery}`);
       setBusinesses(response.data);
     } catch (error) {
       console.error("Error searching businesses:", error);
@@ -31,23 +30,24 @@ const CustomerPage = () => {
         console.error("No token found, user is not logged in.");
         return;
       }
-
+  
       const response = await axios.post(
-        `${BASE_URL}/api/business/contact/${businessId}`,
+        `http://localhost:5000/api/business/contact/${businessId}`,
         {}, // Include any required body parameters
         {
           headers: { Authorization: `Bearer ${token}` }, // Send the token in headers
         }
       );
-
+  
       console.log("Contact request sent:", response.data);
     } catch (error) {
       console.error("Error contacting business:", error.response?.data || error.message);
     }
   };
+  
 
   return (
-    <div className="container">
+    <div>
       <h2>Customer Page</h2>
       <p>Welcome to the customer section!</p>
 
@@ -59,7 +59,7 @@ const CustomerPage = () => {
       </div>
 
       {/* Display Results */}
-      <div className="businessDetails">
+      <div>
         {businesses.length > 0 ? (
           <ul>
             {businesses.map((business) => (

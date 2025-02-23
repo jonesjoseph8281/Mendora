@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../styles/user.css';
+import './styles/user.css';
 
 const User = () => {
   const [userData, setUserData] = useState(null);
-  const BASE_URL = process.env.BASE_URL; // Use the BASE_URL from environment variables
+  const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL; // Use the BASE_URL from environment variables
 
   useEffect(() => {
     const fetchUserData = async () => {

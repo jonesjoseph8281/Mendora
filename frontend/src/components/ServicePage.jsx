@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import '../styles/auth.css';
 
 const ServicePage = () => {
     const navigate = useNavigate();
@@ -9,7 +8,7 @@ const ServicePage = () => {
     const [showContacts, setShowContacts] = useState(false);
 
     const businessId = "your-business-id"; // Replace with actual business ID
-    const BASE_URL = process.env.BASE_URL; // Use the BASE_URL from environment variables
+    const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL; // Use the BASE_URL from environment variables
 
     const fetchContacts = async () => {
         try {
