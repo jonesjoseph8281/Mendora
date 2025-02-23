@@ -113,6 +113,7 @@ router.post("/add",authMiddleware , upload.single("image"), async (req, res) => 
 });
 
 // 📌 Get All Businesses
+// 📌 Fetch All Businesses
 router.get("/all", async (req, res) => {
     try {
         const businesses = await prisma.business.findMany();
@@ -143,32 +144,20 @@ router.get("/search", async (req, res) => {
                 ],
             },
         });
-        res.json(businesses);
+
+        // Ensure image URLs are complete
+        const updatedBusinesses = businesses.map((business) => ({
+            ...business,
+            imageUrl: business.imageUrl ? `${process.env.BASE_URL}${business.imageUrl}` : null,
+        }));
+
+        res.json(updatedBusinesses); // ✅ Corrected response
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// 📌 Get Nearby Businesses (SQL Query)
-router.get("/nearby", async (req, res) => {
-    try {
-        const { lat, lng } = req.query;
-        if (!lat || !lng) return res.status(400).json({ error: "Latitude and longitude are required" });
 
-        const businesses = await prisma.$queryRaw`
-            SELECT *, 
-                (6371 * acos(cos(radians(${lat})) * cos(radians(latitude)) * cos(radians(longitude) - radians(${lng})) + sin(radians(${lat})) * sin(radians(latitude)))) AS distance 
-            FROM "Business"
-            HAVING distance < 5
-            ORDER BY distance;
-        `;
-        res.json(businesses);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// 📌 Add a Review
 router.post("/review/:businessId", authMiddleware, async (req, res) => {
     try {
         const { rating, comment } = req.body;

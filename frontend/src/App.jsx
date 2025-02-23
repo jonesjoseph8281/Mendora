@@ -6,18 +6,22 @@ import Service from "./components/Service";
 import ServicePage from "./components/ServicePage";
 import CustomerPage from "./components/CustomerPage";
 import Business from "./components/Business";
+import Navbar from "./components/Navbar";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/service" element={<Service />} />
-      <Route path="/servicepage" element={<ServicePage />} />
-      <Route path="/customer" element={<CustomerPage />} />
-      <Route path="/business" element={<Business />} />
-    </Routes>
+    <>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/service" element={<Service />} />
+        <Route path="/servicepage" element={<ServicePage />} />
+        <Route path="/customer" element={<CustomerPage />} />
+        <Route path="/business" element={<Business />} />
+      </Routes>
+    </>
   );
 }
 

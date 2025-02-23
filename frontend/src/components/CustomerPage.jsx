@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
+import '../styles/customerpage.css'; // Ensure the CSS file is imported
 
 const CustomerPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [businesses, setBusinesses] = useState([]);
-  const [isVisible, setIsVisible] = useState(false);
-  const [message, setMessage] = useState("");
 
   const fetchAllBusinesses = async () => {
     try {
@@ -32,24 +31,23 @@ const CustomerPage = () => {
         console.error("No token found, user is not logged in.");
         return;
       }
-  
+
       const response = await axios.post(
         `http://localhost:5000/api/business/contact/${businessId}`,
-        {message}, // Include any required body parameters
+        {}, // Include any required body parameters
         {
           headers: { Authorization: `Bearer ${token}` }, // Send the token in headers
         }
       );
-  
+
       console.log("Contact request sent:", response.data);
     } catch (error) {
       console.error("Error contacting business:", error.response?.data || error.message);
     }
   };
-  
 
   return (
-    <div>
+    <div className="container">
       <h2>Customer Page</h2>
       <p>Welcome to the customer section!</p>
 
@@ -61,7 +59,7 @@ const CustomerPage = () => {
       </div>
 
       {/* Display Results */}
-      <div>
+      <div className="businessDetails">
         {businesses.length > 0 ? (
           <ul>
             {businesses.map((business) => (
@@ -77,9 +75,7 @@ const CustomerPage = () => {
                 )}
 
                 {/* Contact Business Button */}
-                <button onClick={() => setIsVisible(true)}>Contact Business</button>
-                {isVisible && (<><input type="text" placeholder="Enter your message" value={message} onChange={(e) => setMessage(e.target.value)} />
-            <button onClick={() => contactBusiness(business.id)}>Send message</button></>)}
+                <button onClick={() => contactBusiness(business.id)}>Contact Business</button>
               </li>
             ))}
           </ul>

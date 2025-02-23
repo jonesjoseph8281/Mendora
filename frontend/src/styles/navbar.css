@@ -1,0 +1,31 @@
+nav {
+  background-color: #1a1a2e;
+  color: #ffffff;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+nav a {
+  color: #ffffff;
+  margin: 0 15px;
+  text-decoration: none;
+  font-size: 1.2em;
+  transition: color 0.3s ease;
+}
+
+nav a:hover {
+  color: #0f3460;
+}
+
+nav .text-xl {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+nav .space-x-4 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
