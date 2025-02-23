@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import axios from "axios";
-import '../styles/customerpage.css'; // Ensure the CSS file is imported
 
 const CustomerPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
