@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import '../styles/auth.css';
 
 const Business = () => {
   const [businessData, setBusinessData] = useState({
@@ -11,6 +12,7 @@ const Business = () => {
     contact: "",
   });
   const [image, setImage] = useState(null);
+  const [error, setError] = useState(null);
   const BASE_URL = process.env.BASE_URL; // Use the BASE_URL from environment variables
 
   const handleChange = (e) => {
@@ -32,14 +34,17 @@ const Business = () => {
       formData.append("image", image);
     }
 
+    const token = localStorage.getItem('authToken'); // Retrieve the token from storage
+
     try {
-      const response = await axios.post(`${BASE_URL}/api/business/add`, formData, {
+      const response = await axios.post("http://localhost:5000/api/business/add", formData, {
         headers: { "Content-Type": "multipart/form-data", "Authorization": `Bearer ${localStorage.getItem("token")}` },
       });
       console.log("Business added successfully:", response.data);
       alert("Business added successfully!");
-    } catch (error) {
-      console.error("Error adding business:", error.response?.data || error.message);
+    } catch (err) {
+      console.error("Error adding business:", err.response ? err.response.data : err.message);
+      setError(err.response ? err.response.data.message : err.message);
       alert("Failed to add business. Try again.");
     }
   };
@@ -60,6 +65,7 @@ const Business = () => {
         
         <button type="submit">Submit</button>
       </form>
+      {error && <p>Error adding business: {error}</p>}
     </div>
   );
 };
