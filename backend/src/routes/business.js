@@ -3,13 +3,59 @@ import prisma from "../utils/prismaClient.js";
 import authMiddleware from "../middleware/auth.js";
 import multer from "multer";
 import path from "path";
+import fs from "fs";
 
 const router = express.Router();
+
+// 📌 Ensure Uploads Directory Exists
+const UPLOADS_DIR = "uploads/";
+if (!fs.existsSync(UPLOADS_DIR)) {
+    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
+// 📌 User Contacts a Business
+router.post("/contact/:businessId", authMiddleware, async (req, res) => {
+    try {
+        const { message } = req.body;
+        const { businessId } = req.params;
+        const userId = req.user.userId; // Get logged-in user from middleware
+
+        // Check if the business exists
+        const business = await prisma.business.findUnique({ where: { id: businessId } });
+        if (!business) return res.status(404).json({ error: "Business not found" });
+
+        // Create contact request entry
+        const contactRequest = await prisma.contactRequest.create({
+            data: {
+                userId,
+                businessId,
+                message,
+            },
+        });
+
+        res.status(201).json({ message: "Contact request sent", contactRequest });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+router.get("/contacts/:businessId", async (req, res) => {
+    try {
+        const { businessId } = req.params;
+
+        const contacts = await prisma.contactRequest.findMany({
+            where: { businessId },
+            include: { user: true }, // Include user details
+        });
+
+        res.json(contacts);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
 // 📌 Multer Configuration for File Uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "uploads/"); // Ensure this folder exists
+        cb(null, UPLOADS_DIR);
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname));
@@ -41,7 +87,14 @@ router.post("/add", upload.single("image"), async (req, res) => {
 router.get("/all", async (req, res) => {
     try {
         const businesses = await prisma.business.findMany();
-        res.json(businesses);
+
+        // Ensure image URLs are complete
+        const updatedBusinesses = businesses.map((business) => ({
+            ...business,
+            imageUrl: business.imageUrl ? `${process.env.BASE_URL}${business.imageUrl}` : null,
+        }));
+
+        res.json(updatedBusinesses);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -51,6 +104,8 @@ router.get("/all", async (req, res) => {
 router.get("/search", async (req, res) => {
     try {
         const { query } = req.query;
+        if (!query) return res.status(400).json({ error: "Query parameter is required" });
+
         const businesses = await prisma.business.findMany({
             where: {
                 OR: [
@@ -104,22 +159,6 @@ router.post("/review/:businessId", authMiddleware, async (req, res) => {
         res.json(newReview);
     } catch (error) {
         res.status(500).json({ error: error.message });
-    }
-});
-
-// 📌 Register a Business (Alternative)
-router.post("/register", upload.single("image"), async (req, res) => {
-    try {
-        const { name, service, location, phone, email, description } = req.body;
-        const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
-
-        const newBusiness = await prisma.business.create({
-            data: { name, service, location, phone, email, description, imageUrl },
-        });
-
-        res.status(201).json(newBusiness);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
     }
 });
 

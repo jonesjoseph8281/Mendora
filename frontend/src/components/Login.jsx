@@ -14,13 +14,18 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', formData);
+      const response = await axios.post("http://localhost:5000/api/auth/login", formData);
       console.log(response.data);
-      navigate('/service');
+      
+      // Store the token in localStorage
+      localStorage.setItem("token", response.data.token);
+      
+      navigate("/service");
     } catch (error) {
-      console.error('Login failed', error.response?.data || error.message);
+      console.error("Login failed", error.response?.data || error.message);
     }
   };
+  
 
   return (
     <div className="auth-container">

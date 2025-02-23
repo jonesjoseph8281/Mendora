@@ -23,6 +23,30 @@ const CustomerPage = () => {
     }
   };
 
+  const contactBusiness = async (businessId) => {
+    try {
+      const token = localStorage.getItem("token"); // Ensure user is logged in
+  
+      if (!token) {
+        console.error("No token found, user is not logged in.");
+        return;
+      }
+  
+      const response = await axios.post(
+        `http://localhost:5000/api/business/contact/${businessId}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` }, // Include auth token
+        }
+      );
+  
+      console.log("Contact request sent successfully:", response.data);
+    } catch (error) {
+      console.error("Error contacting business:", error);
+    }
+  };
+  
+
   return (
     <div>
       <h2>Customer Page</h2>
@@ -47,9 +71,12 @@ const CustomerPage = () => {
                 <p>📧 {business.businessEmail} | 📞 {business.contact}</p>
 
                 {/* Display Image */}
-                {business.image && (
-                  <img src={`http://localhost:5000${business.image}`} alt={business.name} width="200" />
+                {business.imageUrl && (
+                  <img src={business.imageUrl} alt={business.name} style={{ width: "300px", height: "200px", objectFit: "cover" }} />
                 )}
+
+                {/* Contact Business Button */}
+                <button onClick={() => contactBusiness(business.id)}>Contact Business</button>
               </li>
             ))}
           </ul>

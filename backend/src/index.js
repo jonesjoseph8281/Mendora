@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import path from "path";
 import businessRoutes from "./routes/business.js";
 import authRoutes from "./routes/authRoutes.js";
 
@@ -11,6 +12,11 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Serve uploaded images statically
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
+
 
 // Routes
 app.use("/api/business", businessRoutes);

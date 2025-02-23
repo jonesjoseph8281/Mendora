@@ -17,8 +17,9 @@ model Business {
   description String?
   businessEmail String?
   contact     String?
-  imageUrl     String?
+  imageUrl    String?
 
+  contactRequests ContactRequest[]  
 }
 
 model User {
@@ -26,6 +27,19 @@ model User {
   name     String
   email    String  @unique
   password String
-  
-  
+
+  contactRequests ContactRequest[]
 }
+
+model ContactRequest {
+  id         String   @id @default(uuid())
+  userId     String
+  businessId String
+  message    String?
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+  
