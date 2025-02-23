@@ -18,7 +18,7 @@ router.post("/contact/:businessId", authMiddleware, async (req, res) => {
         const { message } = req.body;
         const { businessId } = req.params;
         const userId = req.user.userId; // Get logged-in user from middleware
-
+        console.log(userId)
         // Check if the business exists
         const business = await prisma.business.findUnique({ where: { id: businessId } });
         if (!business) return res.status(404).json({ error: "Business not found" });
@@ -37,16 +37,35 @@ router.post("/contact/:businessId", authMiddleware, async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-router.get("/contacts/:businessId", async (req, res) => {
+
+router.get("/contacts/:businessId", authMiddleware, async (req, res) => {
     try {
-        const { businessId } = req.params;
+        console.log(req.user);
+        
+        const business = await prisma.business.findFirst({ where: { ownerId: req.user.userId } });
 
         const contacts = await prisma.contactRequest.findMany({
-            where: { businessId },
-            include: { user: true }, // Include user details
+            where: { businessId: business.id },
+            include: {
+                user: {
+                    select: {
+                        name: true,
+                        email: true
+                    }
+                }
+            }
         });
 
-        res.json(contacts);
+        console.log("Contacts found:", contacts);
+
+        // Transform response to include name, email, and message
+        const formattedContacts = contacts.map(contact => ({
+            name: contact.user.name,
+            email: contact.user.email,
+            message: contact.message
+        }));
+
+        res.json(formattedContacts);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -64,7 +83,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // 📌 Add a Business with Image
-router.post("/add", upload.single("image"), async (req, res) => {
+router.post("/add",authMiddleware , upload.single("image"), async (req, res) => {
     try {
         const { name, category, description, location, businessEmail, contact } = req.body;
         const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
@@ -74,11 +93,21 @@ router.post("/add", upload.single("image"), async (req, res) => {
         }
 
         const newBusiness = await prisma.business.create({
-            data: { name, category, description, location, businessEmail, contact, imageUrl },
+            data: { 
+                name, 
+                category, 
+                description, 
+                location, 
+                businessEmail, 
+                contact, 
+                imageUrl, 
+                ownerId: req.user.userId // Correctly reference ownerId
+            },   
         });
 
         res.status(201).json(newBusiness);
     } catch (error) {
+        console.log(error)
         res.status(500).json({ error: error.message });
     }
 });

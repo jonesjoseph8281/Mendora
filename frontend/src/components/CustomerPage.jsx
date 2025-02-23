@@ -25,8 +25,7 @@ const CustomerPage = () => {
 
   const contactBusiness = async (businessId) => {
     try {
-      const token = localStorage.getItem("token"); // Ensure user is logged in
-  
+      const token = localStorage.getItem("token"); // Get token from local storage
       if (!token) {
         console.error("No token found, user is not logged in.");
         return;
@@ -34,15 +33,15 @@ const CustomerPage = () => {
   
       const response = await axios.post(
         `http://localhost:5000/api/business/contact/${businessId}`,
-        {},
+        {}, // Include any required body parameters
         {
-          headers: { Authorization: `Bearer ${token}` }, // Include auth token
+          headers: { Authorization: `Bearer ${token}` }, // Send the token in headers
         }
       );
   
-      console.log("Contact request sent successfully:", response.data);
+      console.log("Contact request sent:", response.data);
     } catch (error) {
-      console.error("Error contacting business:", error);
+      console.error("Error contacting business:", error.response?.data || error.message);
     }
   };
   

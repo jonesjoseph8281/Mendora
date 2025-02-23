@@ -10,17 +10,20 @@ datasource db {
 }
 
 model Business {
-  id          String   @id @default(uuid())
-  name        String
-  category    String
-  location    String?
-  description String?
+  id            String   @id @default(uuid())
+  name          String
+  category      String
+  location      String?
+  description   String?
   businessEmail String?
-  contact     String?
-  imageUrl    String?
+  contact       String?
+  imageUrl      String?
 
-  contactRequests ContactRequest[]  
-}
+  ownerId       String   // Foreign key to User
+  owner         User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  contactRequests ContactRequest[]
+} 
 
 model User {
   id       String  @id @default(uuid())
@@ -28,6 +31,7 @@ model User {
   email    String  @unique
   password String
 
+  businesses      Business[]        // One-to-many relationship (User owns multiple businesses)
   contactRequests ContactRequest[]
 }
 
@@ -41,5 +45,6 @@ model ContactRequest {
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 }
+
 
   

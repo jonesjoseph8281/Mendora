@@ -33,7 +33,7 @@ const Business = () => {
 
     try {
       const response = await axios.post("http://localhost:5000/api/business/add", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data", "Authorization": `Bearer ${localStorage.getItem("token")}` },
       });
       console.log("Business added successfully:", response.data);
       alert("Business added successfully!");
