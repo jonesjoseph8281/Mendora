@@ -4,6 +4,8 @@ import axios from "axios";
 const CustomerPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [businesses, setBusinesses] = useState([]);
+  const [isVisible, setIsVisible] = useState(false);
+  const [message, setMessage] = useState("");
 
   const fetchAllBusinesses = async () => {
     try {
@@ -33,7 +35,7 @@ const CustomerPage = () => {
   
       const response = await axios.post(
         `http://localhost:5000/api/business/contact/${businessId}`,
-        {}, // Include any required body parameters
+        {message}, // Include any required body parameters
         {
           headers: { Authorization: `Bearer ${token}` }, // Send the token in headers
         }
@@ -75,7 +77,9 @@ const CustomerPage = () => {
                 )}
 
                 {/* Contact Business Button */}
-                <button onClick={() => contactBusiness(business.id)}>Contact Business</button>
+                <button onClick={() => setIsVisible(true)}>Contact Business</button>
+                {isVisible && (<><input type="text" placeholder="Enter your message" value={message} onChange={(e) => setMessage(e.target.value)} />
+            <button onClick={() => contactBusiness(business.id)}>Send message</button></>)}
               </li>
             ))}
           </ul>
